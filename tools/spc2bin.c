@@ -59,30 +59,33 @@ int convert_spc_file(const char* input_file, const char* output_file) {
         return 1;
     }
 
-    /* Read SPC header */
-    spc_header_t header;
-    if (fread(&header, 1, SPC_HEADER_SIZE, in) != SPC_HEADER_SIZE) {
+    /* Read entire SPC header as raw bytes */
+    uint8_t header[SPC_HEADER_SIZE];
+    if (fread(header, 1, SPC_HEADER_SIZE, in) != SPC_HEADER_SIZE) {
         fprintf(stderr, "Error: Invalid SPC file\n");
         fclose(in);
         return 1;
     }
 
     /* Verify SPC header */
-    if (strncmp(header.header, "SNES-SPC700 Sound File Data", 27) != 0) {
+    if (strncmp((char*)header, "SNES-SPC700 Sound File Data", 27) != 0) {
         fprintf(stderr, "Error: Invalid SPC header\n");
         fclose(in);
         return 1;
     }
 
-    /* Create binary structure */
+    /* Create binary structure - extract fields at correct offsets */
     spc_binary_t bin;
-    bin.pc = header.pc_low | (header.pc_high << 8);
-    bin.a = header.a;
-    bin.x = header.x;
-    bin.y = header.y;
-    bin.psw = header.psw;
-    bin.sp = header.sp;
-    strncpy(bin.title, header.song_title, 32);
+    bin.pc = header[0x25] | (header[0x26] << 8);
+    bin.a = header[0x27];
+    bin.x = header[0x28];
+    bin.y = header[0x29];
+    bin.psw = header[0x2A];
+    bin.sp = header[0x2B];
+    
+    /* Copy song title (offset 0x2E, 32 bytes) */
+    memcpy(bin.title, &header[0x2E], 32);
+    bin.title[31] = '\0';  /* Ensure null termination */
 
     /* Read RAM */
     if (fread(bin.ram, 1, SPC_RAM_SIZE, in) != SPC_RAM_SIZE) {
