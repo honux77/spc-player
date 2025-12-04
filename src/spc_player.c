@@ -29,7 +29,7 @@ static const uint8_t spc_ipl[] = {
     0xCD, 0xBD,             /* mov   x,#$bd */
     0xE8, 0x00,             /* mov   a,#$00 */
     0xC4, 0xF4,             /* mov   $f4,a */
-    0xD8, 0xF4,       /* mov   $f4,x */
+    0xD8, 0xF4,             /* mov   $f4,x */
     0x7E, 0xFD,             /* cmp   y,$f4 */
     0xD0, 0xFC,             /* bne   wait1 */
     0xE4, 0xF5,             /* mov   a,$f5 */

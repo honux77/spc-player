@@ -13,6 +13,16 @@
 #define SPC_DSP_SIZE 0x80
 #define SPC_EXTRA_RAM_SIZE 0x40
 
+/* SPC header field offsets */
+#define SPC_OFF_PC_LOW 0x24
+#define SPC_OFF_PC_HIGH 0x25
+#define SPC_OFF_A 0x26
+#define SPC_OFF_X 0x27
+#define SPC_OFF_Y 0x28
+#define SPC_OFF_PSW 0x29
+#define SPC_OFF_SP 0x2A
+#define SPC_OFF_TITLE 0x2E
+
 typedef struct {
     char header[33];
     uint8_t version_minor;
@@ -76,16 +86,26 @@ int convert_spc_file(const char* input_file, const char* output_file) {
 
     /* Create binary structure - extract fields at correct offsets */
     spc_binary_t bin;
-    bin.pc = header[0x24] | (header[0x25] << 8);
-    bin.a = header[0x26];
-    bin.x = header[0x27];
-    bin.y = header[0x28];
-    bin.psw = header[0x29];
-    bin.sp = header[0x2A];
+    bin.pc = header[SPC_OFF_PC_LOW] | (header[SPC_OFF_PC_HIGH] << 8);
+    bin.a = header[SPC_OFF_A];
+    bin.x = header[SPC_OFF_X];
+    bin.y = header[SPC_OFF_Y];
+    bin.psw = header[SPC_OFF_PSW];
+    bin.sp = header[SPC_OFF_SP];
     
-    /* Copy song title (offset 0x2E, 32 bytes) */
-    memcpy(bin.title, &header[0x2E], 32);
-    bin.title[31] = '\0';  /* Ensure null termination */
+    /* Copy song title and ensure null termination */
+    memcpy(bin.title, &header[SPC_OFF_TITLE], 32);
+    /* Check if title uses all 32 bytes, if so, ensure null termination */
+    int has_null = 0;
+    for (int i = 0; i < 32; i++) {
+        if (bin.title[i] == '\0') {
+            has_null = 1;
+            break;
+        }
+    }
+    if (!has_null) {
+        bin.title[31] = '\0';
+    }
 
     /* Read RAM */
     if (fread(bin.ram, 1, SPC_RAM_SIZE, in) != SPC_RAM_SIZE) {

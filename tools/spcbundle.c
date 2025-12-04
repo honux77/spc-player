@@ -108,7 +108,11 @@ int main(int argc, char *argv[]) {
     fprintf(out, "/* Array of all tracks */\n");
     fprintf(out, "const spc_data_t spc_tracks[] = {\n");
     for (int i = 0; i < num_files; i++) {
-        fprintf(out, "    spc_track_%d%s\n", i, (i < num_files - 1) ? "," : "");
+        if (i < num_files - 1) {
+            fprintf(out, "    spc_track_%d,\n", i);
+        } else {
+            fprintf(out, "    spc_track_%d\n", i);
+        }
     }
     fprintf(out, "};\n\n");
 
