@@ -1,0 +1,30 @@
+# Build artifacts
+build/
+*.o
+*.s
+*.sfc
+*.smc
+
+# Converter binaries
+spc2bin
+spcbundle
+
+# SPC binary files
+*.bin
+!tools/*.c
+!src/*.c
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temp files
+tmp/
+temp/
