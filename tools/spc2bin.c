@@ -46,10 +46,10 @@ typedef struct {
     uint8_t y;
     uint8_t psw;
     uint8_t sp;
-    char title[32];
     uint8_t ram[SPC_RAM_SIZE];
     uint8_t dsp_regs[SPC_DSP_SIZE];
     uint8_t extra_ram[SPC_EXTRA_RAM_SIZE];
+    char title[32];
 } spc_binary_t;
 
 int convert_spc_file(const char* input_file, const char* output_file) {
@@ -76,12 +76,12 @@ int convert_spc_file(const char* input_file, const char* output_file) {
 
     /* Create binary structure - extract fields at correct offsets */
     spc_binary_t bin;
-    bin.pc = header[0x25] | (header[0x26] << 8);
-    bin.a = header[0x27];
-    bin.x = header[0x28];
-    bin.y = header[0x29];
-    bin.psw = header[0x2A];
-    bin.sp = header[0x2B];
+    bin.pc = header[0x24] | (header[0x25] << 8);
+    bin.a = header[0x26];
+    bin.x = header[0x27];
+    bin.y = header[0x28];
+    bin.psw = header[0x29];
+    bin.sp = header[0x2A];
     
     /* Copy song title (offset 0x2E, 32 bytes) */
     memcpy(bin.title, &header[0x2E], 32);

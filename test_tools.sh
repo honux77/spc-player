@@ -11,6 +11,10 @@ GREEN='\033[0;32m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
+# Get script directory and cd to it
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR"
+
 # Build tools
 echo "Building tools..."
 make test-tools
@@ -55,14 +59,15 @@ echo
 # Create test SPC file (minimal valid structure)
 echo "Creating test SPC file..."
 mkdir -p /tmp/spc_test
-cd /tmp/spc_test
 
 # Create a minimal valid SPC file for testing
 python3 << 'EOF'
 import struct
+import os
 
 # Create minimal SPC file
-with open('test.spc', 'wb') as f:
+os.makedirs('/tmp/spc_test', exist_ok=True)
+with open('/tmp/spc_test/test.spc', 'wb') as f:
     # Header (256 bytes)
     header = bytearray(256)
     
@@ -76,13 +81,13 @@ with open('test.spc', 'wb') as f:
     header[0x23] = 0x1E  # version minor
     
     # CPU state
-    header[0x25] = 0x12  # PC low
-    header[0x26] = 0x34  # PC high
-    header[0x27] = 0x00  # A
-    header[0x28] = 0x00  # X
-    header[0x29] = 0x00  # Y
-    header[0x2A] = 0x00  # PSW
-    header[0x2B] = 0xEF  # SP
+    header[0x24] = 0x12  # PC low
+    header[0x25] = 0x34  # PC high
+    header[0x26] = 0x00  # A
+    header[0x27] = 0x00  # X
+    header[0x28] = 0x00  # Y
+    header[0x29] = 0x00  # PSW
+    header[0x2A] = 0xEF  # SP
     
     # Song title
     title = b"Test Song"
@@ -107,9 +112,9 @@ with open('test.spc', 'wb') as f:
 print("Created test.spc")
 EOF
 
-if [ -f test.spc ]; then
+if [ -f /tmp/spc_test/test.spc ]; then
     echo -e "${GREEN}✓${NC} Test SPC file created"
-    ls -lh test.spc
+    ls -lh /tmp/spc_test/test.spc
 else
     echo -e "${RED}✗${NC} Failed to create test SPC file"
     exit 1
@@ -118,7 +123,6 @@ echo
 
 # Test spc2bin conversion
 echo "Testing SPC to binary conversion..."
-cd /home/runner/work/spc-player/spc-player
 if ./build/spc2bin /tmp/spc_test/test.spc /tmp/spc_test/test.spc.bin; then
     echo -e "${GREEN}✓${NC} SPC conversion successful"
     

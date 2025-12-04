@@ -29,20 +29,20 @@ Usually 0x1E for version 0.30
 
 ### Offset 0x23 (1 byte): Version Minor (repeat)
 
-### Offset 0x24 (2 bytes): Program Counter (PC)
+### Offset 0x24-0x25 (2 bytes): Program Counter (PC)
 Little-endian 16-bit value
 
-### Offset 0x25 (1 byte): Accumulator (A)
+### Offset 0x26 (1 byte): Accumulator (A)
 
-### Offset 0x26 (1 byte): X Register
+### Offset 0x27 (1 byte): X Register
 
-### Offset 0x27 (1 byte): Y Register
+### Offset 0x28 (1 byte): Y Register
 
-### Offset 0x28 (1 byte): Processor Status Word (PSW)
+### Offset 0x29 (1 byte): Processor Status Word (PSW)
 
-### Offset 0x29 (1 byte): Stack Pointer (SP)
+### Offset 0x2A (1 byte): Stack Pointer (SP)
 
-### Offset 0x2A-0x2B (2 bytes): Reserved
+### Offset 0x2B-0x2D (3 bytes): Reserved
 
 ### Offset 0x2E-0x4D (32 bytes): Song Title
 ASCII string, zero-padded
